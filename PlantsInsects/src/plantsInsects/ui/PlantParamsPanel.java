@@ -14,6 +14,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+import plantsInsects.ParameterSerializationHelper;
 import plantsInsects.PlantParams;
 import plantsInsects.enums.PlantHeight;
 import repast.simphony.engine.environment.ControllerRegistry;

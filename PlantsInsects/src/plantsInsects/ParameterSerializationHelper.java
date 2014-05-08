@@ -1,4 +1,4 @@
-package plantsInsects.ui;
+package plantsInsects;
 
 import java.awt.Color;
 import java.io.File;
@@ -7,13 +7,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import plantsInsects.EnvironmentParams;
-import plantsInsects.InsectParams;
-import plantsInsects.PlantParams;
 import plantsInsects.enums.InsectInitialDistribution;
 import plantsInsects.enums.InsectSensoryMode;
 import plantsInsects.enums.PlantHeight;
 import plantsInsects.enums.PlantSpacialDistribution;
+import plantsInsects.ui.ModelUserPanel;
 import repast.simphony.engine.environment.ControllerRegistry;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.parameter.ParameterSchema;

@@ -60,9 +60,7 @@ public class SeasonHelper {
 			for(InsectParams params: insParams) {
 				params.setCount(0);
 			}
-//			for(Object insObj: context.getObjects(Insect.class)) {
-//				context.remove(insObj);
-//			}
+
 		} else if(tick % 364 == 0) {
 			setWinterSeason(false);
 			System.out.println("start summer season");

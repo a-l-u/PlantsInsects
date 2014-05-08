@@ -55,7 +55,7 @@ public class Insect {
 			
 			// laid all eggs
 			if(eggsLeft <= 0) {
-				//System.out.println(speciesParams.getInsectId() + ": " + toString() + " died because all its eggs hatched");
+				System.out.println(speciesParams.getInsectId() + ": " + toString() + " died because all its eggs hatched");
 				context.remove(this);
 				speciesParams.decrementCount();
 				return;
@@ -65,9 +65,11 @@ public class Insect {
 			currentTolerance--;
 		}
 		
+		System.out.println(currentTolerance);
+		
 		// daily mortality rate
 		if(RandomHelper.nextDoubleFromTo(0, 1) < speciesParams.getMortalityRate()) {
-			//System.out.println(speciesParams.getInsectId() + ": " + toString() + " died as part of daily mortality rate");
+			System.out.println(speciesParams.getInsectId() + ": " + toString() + " died as part of daily mortality rate");
 			context.remove(this);
 			speciesParams.decrementCount();
 			return;
@@ -84,7 +86,10 @@ public class Insect {
 		double singlePlantImpact = MAX_MEMORY_IMPACT_ON_MIGRATION / speciesParams.getMemorySize();
 		for(Plant visited: visitedPlants) {
 			if(!speciesParams.getPreferredPlantIds().contains(visited.getSpeciesParams().getPlantId())) {
-				migOutChance += singlePlantImpact;
+				if(migOutChance > 0)
+				{
+					migOutChance += singlePlantImpact;
+				}
 			}
 		}
 		
@@ -100,7 +105,7 @@ public class Insect {
 		
 		// migration out
 		if(RandomHelper.nextDoubleFromTo(0, 1) < migOutChance) {
-			//System.out.println(speciesParams.getInsectId() + ": " + toString() + " migrated out");
+			System.out.println(speciesParams.getInsectId() + ": " + toString() + " migrated out");
 			context.remove(this);
 			speciesParams.decrementCount();
 			return;
@@ -127,306 +132,188 @@ public class Insect {
 		return plant;
 	}
 	
-	private Plant getNextPlantVisual() {		
-//		GridCellNgh<Plant> nghCreator = new GridCellNgh<Plant>(grid, grid.getLocation(this),
-//				Plant.class, speciesParams.getMaxFlightLength(), speciesParams.getMaxFlightLength());
-//		List<GridCell<Plant>> gridCells = nghCreator.getNeighborhood(false);
-//		SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
-//		
-//		GridPoint insPoint = grid.getLocation(this);
-		Plant closestNonPreferred = null;
+private Plant getNextPlantVisual() {		
+	Plant closestNonPreferred = null;
+	
+	for(int radius = 1; radius <= speciesParams.getMaxFlightLength(); radius++) {
+		ArrayList<Plant> plantsInCircle = getPlantsInRadius(radius);
+		SimUtilities.shuffle(plantsInCircle, RandomHelper.getUniform());
 		
-//		for(int extent = 1; extent <= speciesParams.getMaxFlightLength(); extent++) {			
-//			for(GridCell<Plant> cell: gridCells) {
-//				if((cell.getPoint().getX() - extent == insPoint.getX() && cell.getPoint().getY() + extent >= insPoint.getY() && cell.getPoint().getY() - extent <= insPoint.getY())
-//				|| (cell.getPoint().getX() + extent == insPoint.getX() && cell.getPoint().getY() + extent >= insPoint.getY() && cell.getPoint().getY() - extent <= insPoint.getY())
-//				|| (cell.getPoint().getY() - extent == insPoint.getY() && cell.getPoint().getX() + extent >= insPoint.getX() && cell.getPoint().getX() - extent <= insPoint.getX())
-//				|| (cell.getPoint().getY() + extent == insPoint.getY() && cell.getPoint().getX() + extent >= insPoint.getX() && cell.getPoint().getX() - extent <= insPoint.getX())) {
-//					Plant current = cell.items().iterator().next();
-//					if(speciesParams.getPreferredPlantIds().contains(current.getSpeciesParams().getPlantId()) && !visitedPlants.contains(current))						
-//						return current;
-//
-//					else if(closestNonPreferred == null)
-//						closestNonPreferred = current;
-//				}
-//			}
-//		}
-		
-		for(int radius = 1; radius <= speciesParams.getMaxFlightLength(); radius++) {
-			ArrayList<Plant> plantsInCircle = getPlantsInRadius(radius);
-//			for(int i = -radius; i <= radius; i++) {
-//				// this algorithm will produce duplicates but that shouldn't matter
-//				int x1 = insPoint.getX() - radius;
-//				int y1 = insPoint.getY() + i;
-//				if(x1 >= 0 && x1 < grid.getDimensions().getWidth() && y1 >= 0 && y1 < grid.getDimensions().getHeight())
-//					plantsInCircle.add(getPlantAt(x1, y1));
-//				
-//				int x2 = insPoint.getX() + radius;
-//				int y2 = insPoint.getY() + i;
-//				if(x2 >= 0 && x2 < grid.getDimensions().getWidth() && y2 >= 0 && y2 < grid.getDimensions().getHeight())
-//					plantsInCircle.add(getPlantAt(x2, y2));
-//				
-//				int x3 = insPoint.getX() + i;
-//				int y3 = insPoint.getY() - radius;
-//				if(x3 >= 0 && x3< grid.getDimensions().getWidth() && y3 >= 0 && y3 < grid.getDimensions().getHeight())
-//					plantsInCircle.add(getPlantAt(x3, y3));
-//				
-//				int x4 = insPoint.getX() + i;
-//				int y4 = insPoint.getY() + radius;
-//				if(x4 >= 0 && x4< grid.getDimensions().getWidth() && y4 >= 0 && y4 < grid.getDimensions().getHeight())
-//					plantsInCircle.add(getPlantAt(x4, y4));
-//			}
-			SimUtilities.shuffle(plantsInCircle, RandomHelper.getUniform());
-			
-			for(Plant plant: plantsInCircle) {
-				if(speciesParams.getPreferredPlantIds().contains(plant.getSpeciesParams().getPlantId()) && !visitedPlants.contains(plant) && canSeePlant(plant))						
-					return plant;
-				else if(closestNonPreferred == null && !visitedPlants.contains(plant) && canSeePlant(plant))
-					closestNonPreferred = plant;
-			}
+		for(Plant plant: plantsInCircle) {
+			if(speciesParams.getPreferredPlantIds().contains(plant.getSpeciesParams().getPlantId()) && !visitedPlants.contains(plant) && canSeePlant(plant))						
+				return plant;
+			else if(closestNonPreferred == null && !visitedPlants.contains(plant) && canSeePlant(plant))
+				closestNonPreferred = plant;
 		}
-		
-		return closestNonPreferred;
 	}
+	
+	return closestNonPreferred;
+}
 
-	private Plant getNextPlantContact() {
-		GridCellNgh<Plant> nghCreator = new GridCellNgh<Plant>(grid, grid.getLocation(this),
-				Plant.class, speciesParams.getMaxFlightLength(), speciesParams.getMaxFlightLength());
-		List<GridCell<Plant>> gridCells = nghCreator.getNeighborhood(false);
-		SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
-		
-		//System.out.println("Contact " + gridCells.size());
-		
-		// return the first unvisited plant since they are shuffled, it will be random
-		Plant result = null;
-		for(GridCell<Plant> cell: gridCells) {
-			Plant current = cell.items().iterator().next();
-			if(!visitedPlants.contains(current)) {
-				result = current;
-				break;
-			}
-		}
-		return  result;
-	}
+private Plant getNextPlantContact() {
+	GridCellNgh<Plant> nghCreator = new GridCellNgh<Plant>(grid, grid.getLocation(this),
+			Plant.class, speciesParams.getMaxFlightLength(), speciesParams.getMaxFlightLength());
+	List<GridCell<Plant>> gridCells = nghCreator.getNeighborhood(false);
+	SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
 	
-	private Plant getNextPlantOlfactory() {
-//		int extent = speciesParams.getMaxFlightLength();
-//		GridCellNgh<Plant> nghCreator = new GridCellNgh<Plant>(grid, grid.getLocation(this),
-//				Plant.class, extent, extent);
-//		List<GridCell<Plant>> gridCells = nghCreator.getNeighborhood(false);
-//		SimUtilities.shuffle(gridCells, RandomHelper.getUniform());
-//		
-//		GridPoint insPoint = grid.getLocation(this);
-//		GridPoint edgePoint = null;
-//		for(GridCell<Plant> cell: gridCells) {
-//			// get the first edge point encountered - will be random because they are shuffled
-//			if(!visitedPlants.contains(getPlantAt(cell.getPoint().getX(), cell.getPoint().getY()))
-//					&& (cell.getPoint().getX() - extent == insPoint.getX()
-//					|| cell.getPoint().getX() + extent == insPoint.getX()
-//					|| cell.getPoint().getY() - extent == insPoint.getY()
-//					|| cell.getPoint().getY() + extent == insPoint.getY())) {
-//				edgePoint = cell.getPoint();
-//				break;
-//			}
-//		}
-//		
-//		if(edgePoint == null) 
-//			edgePoint = new GridPoint(insPoint.getX() - extent, insPoint.getY() - extent);
-		
-		ArrayList<Plant> plantsInCircle = getPlantsInRadius(speciesParams.getMaxFlightLength());
-		Plant chosen = plantsInCircle.get(RandomHelper.nextIntFromTo(0, plantsInCircle.size() - 1));
-		
-		ArrayList<Plant> plantsInLine = getPlantsInLine(grid.getLocation(chosen));
-		for(Plant p: plantsInLine) {
-			if(!visitedPlants.contains(p) && speciesParams.getPreferredPlantIds().contains(p.getSpeciesParams().getPlantId())) 
-				return p;
+	// return the first unvisited plant since they are shuffled, it will be random
+	Plant result = null;
+	for(GridCell<Plant> cell: gridCells) {
+		Plant current = cell.items().iterator().next();
+		if(!visitedPlants.contains(current)) {
+			result = current;
+			break;
 		}
-		
-		return plantsInLine.get(plantsInLine.size() - 1);
-		
-//		// Bresenham's line algorithm
-//				   
-//		int dx = Math.abs(edgePoint.getX() - insPoint.getX());
-//		int dy = Math.abs(edgePoint.getY() - insPoint.getY());
-//		int sx, sy;
-//		int err = dx - dy;
-//		
-//		if(insPoint.getX() < edgePoint.getX())
-//			sx = 1;
-//		else
-//			sx = -1;
-//		
-//		if(insPoint.getY() < edgePoint.getY())
-//			sy = 1;
-//		else
-//			sy = -1;
-//		
-//		int x = insPoint.getX();
-//		int y = insPoint.getY();
-//		while(true) {
-//			Plant current = getPlantAt(x, y);
-//			if((!visitedPlants.contains(current) && speciesParams.getPreferredPlantIds().contains(current.getSpeciesParams().getPlantId()))
-//					|| (x == edgePoint.getX() && y == edgePoint.getY())) 
-//				return current;
-//			
-//			int e2 = 2*err;
-//			if(e2 > -dy) {
-//				err = err - dy;
-//				x = x + sx;
-//			}
-//			
-//			if(e2 < dx) {
-//				err = err + dx;
-//				y = y + sy;
-//			}
-//		}
 	}
+	return  result;
+}
 
-	private Plant getPlantAt(int x, int y) {
-		Plant result = null;
-		for(Object o: grid.getObjectsAt(x, y)) {
-			if(o.getClass() == Plant.class) {
-				result = (Plant) o;
-				break;
-			}
-		}
-		
-		return result;
+private Plant getNextPlantOlfactory() {
+	ArrayList<Plant> plantsInCircle = getPlantsInRadius(speciesParams.getMaxFlightLength());
+	Plant chosen = plantsInCircle.get(RandomHelper.nextIntFromTo(0, plantsInCircle.size() - 1));
+	
+	ArrayList<Plant> plantsInLine = getPlantsInLine(grid.getLocation(chosen));
+	for(Plant p: plantsInLine) {
+		if(!visitedPlants.contains(p) && speciesParams.getPreferredPlantIds().contains(p.getSpeciesParams().getPlantId())) 
+			return p;
 	}
 	
-	private ArrayList<Plant> getPlantsInRadius(int radius) {
-		GridPoint insPoint = grid.getLocation(this);
-		ArrayList<Plant> plantsInCircle = new ArrayList<Plant>();
-		for(int i = -radius; i <= radius; i++) {
-			int x1 = insPoint.getX() - radius;
-			int y1 = insPoint.getY() + i;
-			// otherwise creates duplicate
-			if(radius != i)
-				if(x1 >= 0 && x1 < grid.getDimensions().getWidth() && y1 >= 0 && y1 < grid.getDimensions().getHeight())
-					plantsInCircle.add(getPlantAt(x1, y1));
-			
-			int x2 = insPoint.getX() + radius;
-			int y2 = insPoint.getY() + i;
-			if(radius != -i)
-				if(x2 >= 0 && x2 < grid.getDimensions().getWidth() && y2 >= 0 && y2 < grid.getDimensions().getHeight())
-					plantsInCircle.add(getPlantAt(x2, y2));
-			
-			int x3 = insPoint.getX() + i;
-			int y3 = insPoint.getY() - radius;
-			if(radius != -i)
-				if(x3 >= 0 && x3< grid.getDimensions().getWidth() && y3 >= 0 && y3 < grid.getDimensions().getHeight())
-					plantsInCircle.add(getPlantAt(x3, y3));
-			
-			int x4 = insPoint.getX() + i;
-			int y4 = insPoint.getY() + radius;
-			if(radius != i)
-				if(x4 >= 0 && x4< grid.getDimensions().getWidth() && y4 >= 0 && y4 < grid.getDimensions().getHeight())
-					plantsInCircle.add(getPlantAt(x4, y4));
+	return plantsInLine.get(plantsInLine.size() - 1);
+}
+
+private Plant getPlantAt(int x, int y) {
+	Plant result = null;
+	for(Object o: grid.getObjectsAt(x, y)) {
+		if(o.getClass() == Plant.class) {
+			result = (Plant) o;
+			break;
 		}
-		//System.out.println(plantsInCircle.size());
-		return plantsInCircle;
 	}
 	
-	private ArrayList<Plant> getPlantsInLine(GridPoint toPoint) {
+	return result;
+}
+
+private ArrayList<Plant> getPlantsInRadius(int radius) {
+	GridPoint insPoint = grid.getLocation(this);
+	ArrayList<Plant> plantsInCircle = new ArrayList<Plant>();
+	for(int i = -radius; i <= radius; i++) {
+		int x1 = insPoint.getX() - radius;
+		int y1 = insPoint.getY() + i;
 		
-		GridPoint insPoint = grid.getLocation(this);
-		ArrayList<Plant> plants = new ArrayList<Plant>();
+		// otherwise creates duplicate
+		if(radius != i)
+			if(x1 >= 0 && x1 < grid.getDimensions().getWidth() && y1 >= 0 && y1 < grid.getDimensions().getHeight())
+				plantsInCircle.add(getPlantAt(x1, y1));
 		
-		// Bresenham's line algorithm
-		   
-		int dx = Math.abs(toPoint.getX() - insPoint.getX());
-		int dy = Math.abs(toPoint.getY() - insPoint.getY());
-		int sx, sy;
-		int err = dx - dy;
+		int x2 = insPoint.getX() + radius;
+		int y2 = insPoint.getY() + i;
+		if(radius != -i)
+			if(x2 >= 0 && x2 < grid.getDimensions().getWidth() && y2 >= 0 && y2 < grid.getDimensions().getHeight())
+				plantsInCircle.add(getPlantAt(x2, y2));
 		
-		if(insPoint.getX() < toPoint.getX())
-			sx = 1;
-		else
-			sx = -1;
+		int x3 = insPoint.getX() + i;
+		int y3 = insPoint.getY() - radius;
+		if(radius != -i)
+			if(x3 >= 0 && x3< grid.getDimensions().getWidth() && y3 >= 0 && y3 < grid.getDimensions().getHeight())
+				plantsInCircle.add(getPlantAt(x3, y3));
 		
-		if(insPoint.getY() < toPoint.getY())
-			sy = 1;
-		else
-			sy = -1;
+		int x4 = insPoint.getX() + i;
+		int y4 = insPoint.getY() + radius;
+		if(radius != i)
+			if(x4 >= 0 && x4< grid.getDimensions().getWidth() && y4 >= 0 && y4 < grid.getDimensions().getHeight())
+				plantsInCircle.add(getPlantAt(x4, y4));
+	}
+	//System.out.println(plantsInCircle.size());
+	return plantsInCircle;
+}
+
+private ArrayList<Plant> getPlantsInLine(GridPoint toPoint) {
+	
+	GridPoint insPoint = grid.getLocation(this);
+	ArrayList<Plant> plants = new ArrayList<Plant>();
+	
+	// Bresenham's line algorithm
+	   
+	int dx = Math.abs(toPoint.getX() - insPoint.getX());
+	int dy = Math.abs(toPoint.getY() - insPoint.getY());
+	int sx, sy;
+	int err = dx - dy;
+	
+	if(insPoint.getX() < toPoint.getX())
+		sx = 1;
+	else
+		sx = -1;
+	
+	if(insPoint.getY() < toPoint.getY())
+		sy = 1;
+	else
+		sy = -1;
+	
+	int x = insPoint.getX();
+	int y = insPoint.getY();
+	
+	while(true) {
+		plants.add(getPlantAt(x, y));
+		if(x == toPoint.getX() && y == toPoint.getY()) 
+			break;
 		
-		int x = insPoint.getX();
-		int y = insPoint.getY();
-		
-		while(true) {
-			plants.add(getPlantAt(x, y));
-			if(x == toPoint.getX() && y == toPoint.getY()) 
-				break;
-			
-			int e2 = 2*err;
-			if(e2 > -dy) {
-				err = err - dy;
-				x = x + sx;
-			}
-			
-			if(e2 < dx) {
-				err = err + dx;
-				y = y + sy;
-			}
+		int e2 = 2*err;
+		if(e2 > -dy) {
+			err = err - dy;
+			x = x + sx;
 		}
 		
-		return plants;
+		if(e2 < dx) {
+			err = err + dx;
+			y = y + sy;
+		}
 	}
 	
-	private boolean canSeePlant(Plant plant) {
-		
-//		PlantHeight nextHighest;
-//		switch(plant.getSpeciesParams().getHeight()) {
-//			case High:
-//				return true;
-//			case Medium:
-//				nextHighest = PlantHeight.High;
-//				break;
-//			case Short:
-//			default:
-//				nextHighest = PlantHeight.Medium;
-//				break;
-//		}
-		if(plant.getSpeciesParams().getHeight() == PlantHeight.High) {
-			return true;
+	return plants;
+}
+
+private boolean canSeePlant(Plant plant) {
+	if(plant.getSpeciesParams().getHeight() == PlantHeight.High) {
+		return true;
+	}
+	
+	GridPoint plantPoint = grid.getLocation(plant);
+	ArrayList<Plant> plantsInLine = getPlantsInLine(plantPoint);
+	
+	int highPos = -1, medPos = -1;
+	
+	for(int i = 0; i < plantsInLine.size(); i++) {
+		PlantHeight currentHeight = plantsInLine.get(i).getSpeciesParams().getHeight();
+		if(currentHeight == PlantHeight.High) {
+			highPos = i;
+		} else if(currentHeight == PlantHeight.Medium) {
+			medPos = i;
 		}
-		
-		GridPoint plantPoint = grid.getLocation(plant);
-		ArrayList<Plant> plantsInLine = getPlantsInLine(plantPoint);
-		
-		int highPos = -1, medPos = -1;
-		
-		for(int i = 0; i < plantsInLine.size(); i++) {
-			PlantHeight currentHeight = plantsInLine.get(i).getSpeciesParams().getHeight();
-			if(currentHeight == PlantHeight.High) {
-				highPos = i;
-			} else if(currentHeight == PlantHeight.Medium) {
-				medPos = i;
-			}
-		}
-		
-		boolean canSee = false;
-		if(highPos < 0) {
-			if(medPos < 0 || plant.getSpeciesParams().getHeight() == PlantHeight.Medium) {
-				canSee =  true;
-			} else if(medPos >= plantsInLine.size() - 1 - medPos) {
-				canSee = false;
-			} else {
-				canSee = true;
-			}
+	}
+	
+	boolean canSee = false;
+	if(highPos < 0) {
+		if(medPos < 0 || plant.getSpeciesParams().getHeight() == PlantHeight.Medium) {
+			canSee =  true;
+		} else if(medPos >= plantsInLine.size() - 1 - medPos) {
+			canSee = false;
 		} else {
-			if(highPos >= plantsInLine.size() - 1 - highPos) {
-				canSee = false;
-			} else {
-				canSee = true;
-			}
-			
-			if(medPos > highPos && medPos >= plantsInLine.size() - 1 - medPos) {
-				canSee = false;
-			}
+			canSee = true;
+		}
+	} else {
+		if(highPos >= plantsInLine.size() - 1 - highPos) {
+			canSee = false;
+		} else {
+			canSee = true;
 		}
 		
-		return canSee;
+		if(medPos > highPos && medPos >= plantsInLine.size() - 1 - medPos) {
+			canSee = false;
+		}
 	}
+	
+	return canSee;
+}
 
 	public int getEggsLeft() {
 		return eggsLeft;

@@ -1,7 +1,7 @@
 <repast.simphony.data2.engine.DataSetDescriptor>
-  <name>Insect Species Count</name>
+  <name>Plant Damage</name>
   <type>NON_AGGREGATE</type>
-  <sourceType>plantsInsects.InsectParams</sourceType>
+  <sourceType>plantsInsects.PlantParams</sourceType>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
   <inclRandomSeed>false</inclRandomSeed>
@@ -12,24 +12,32 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-1301435273</hashCode>
+    <hashCode>1056290574</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>InsectId</string>
+      <string>PlantId</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>InsectId</id>
-        <className>plantsInsects.InsectParams</className>
-        <methodName>getInsectId</methodName>
+        <id>PlantId</id>
+        <className>plantsInsects.PlantParams</className>
+        <methodName>getPlantId</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>Count</string>
+      <string>TotalDamge</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Count</id>
-        <className>plantsInsects.InsectParams</className>
-        <methodName>getCount</methodName>
+        <id>TotalDamge</id>
+        <className>plantsInsects.PlantParams</className>
+        <methodName>getTotalDamge</methodName>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>MaxDamage</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>MaxDamage</id>
+        <className>plantsInsects.PlantParams</className>
+        <methodName>getMaxDamage</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>

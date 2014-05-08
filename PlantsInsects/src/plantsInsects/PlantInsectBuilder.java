@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import plantsInsects.ui.ModelUserPanel;
-import plantsInsects.ui.ParameterSerializationHelper;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.grid.GridFactory;
 import repast.simphony.context.space.grid.GridFactoryFinder;
@@ -57,16 +56,16 @@ public class PlantInsectBuilder implements ContextBuilder<Object> {
 		    }
 	        
 		} catch (NoSuchMethodException | SecurityException e) {
-			// TODO Auto-generated catch block
+			// do nothing
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
+			// do nothing
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
+			// do nothing
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
+			// do nothing
 			e.printStackTrace();
 		}
 		
@@ -77,20 +76,10 @@ public class PlantInsectBuilder implements ContextBuilder<Object> {
 	public Context build(Context<Object> context) {
 		context.setId("PlantsInsects");
 		
-//		EnvironmentParams envParams = ModelUserPanel.getInstance().getEnvironmentParams();
-//		ArrayList<PlantParams> plantParams = ModelUserPanel.getInstance().getPlantParams();
-//		ArrayList<InsectParams> insectParams = ModelUserPanel.getInstance().getInsectParams();
-		
 		ParameterSerializationHelper helper = new ParameterSerializationHelper();		
 		EnvironmentParams envParams = helper.getEnvironmentParams();
 		ArrayList<PlantParams> plantParams = helper.getPlantParams();
 		ArrayList<InsectParams> insectParams = helper.getInsectParams();
-		
-//		System.out.println(envParams.getGridSize());
-//		System.out.println(envParams.getNumInsects());
-//		System.out.println(envParams.getNumPlants());
-//		System.out.println(envParams.getNumYears());
-//		System.out.println(envParams.getDistribution());
 		
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
 		Grid<Object> grid = gridFactory.createGrid("grid", context,
@@ -110,9 +99,9 @@ public class PlantInsectBuilder implements ContextBuilder<Object> {
 		
 		ArrayList<Plant> plants = new ArrayList<Plant>();
 		ArrayList<GridPoint> occupied = new ArrayList<GridPoint>();
-		//int gridCells = envParams.getGridSize()*envParams.getGridSize();
+		
 		for(int i = 0; i < plantParams.size(); i++) {
-			//int plantCount = (int) (gridCells*plantParams.get(i).getPercentage());	
+				
 			ArrayList<GridPoint> plantPoints;
 			if(i == plantParams.size() -1) {
 				plantPoints = getUnoccupied(envParams.getGridSize(), occupied);
@@ -137,7 +126,7 @@ public class PlantInsectBuilder implements ContextBuilder<Object> {
 			for(int i = 0; i < insParams.getInitialCount(); i++) {
 				int eggCount = 0;
 				if(insParams.getMaxEggs() > 0)
-					eggCount = RandomHelper.nextIntFromTo(insParams.getMaxEggs() / 2, insParams.getMaxEggs());
+					eggCount = RandomHelper.nextIntFromTo(Math.max(1, insParams.getMaxEggs() / 2), insParams.getMaxEggs());
 				
 				Insect ins = new Insect(insParams, eggCount, context);
 				context.add(ins);
@@ -164,50 +153,7 @@ public class PlantInsectBuilder implements ContextBuilder<Object> {
 			}
 			context.add(insParams);
 		}
-		
-//		Parameters params = RunEnvironment.getInstance().getParameters();
-//		int thr = (Integer) params.getValue("p_host_dmg_threshold");
-//		System.out.println(thr);
-//		int specCount = (Integer) params.getValue("specCount");
-//		int genCount = (Integer) params.getValue("genCount");
-//		boolean randPlantDist = params.getBoolean("randPlantDist");
-//		double hostPerc = params.getDouble("hostPerc");
-//		
-		
-		
-//		ParametersCreator creator = new ParametersCreator();
-//		creator.addParameters(params);
-//		
-//		for(PlantParams pp: plantParams) {
-//			String paramsPrefix = "p_" + pp.getPlantId() + "_";
-//			if(creator.contains(paramsPrefix + "id")) {
-//				//params.setValue(paramsPrefix + "id", );
-//			} else {
-//				String colStr = String.format("#%02x%02x%02x", pp.getDisplayCol().getRed(), pp.getDisplayCol().getGreen(), pp.getDisplayCol().getBlue());
-//				creator.addParameter(paramsPrefix + "id", String.class, pp.getPlantId(), false);
-//				creator.addParameter(paramsPrefix + "colour", String.class, colStr, false);
-//				creator.addParameter(paramsPrefix + "percentage", Double.class, pp.getPercentage(), false);
-//				creator.addParameter(paramsPrefix + "dmg_threshold", Integer.class, pp.getDamageThreshold(), false);
-//				creator.addParameter(paramsPrefix + "reprod_success", Integer.class, pp.getReproductiveSuccess(), false);
-//				creator.addParameter(paramsPrefix + "height", String.class, pp.getHeight().toString(), false);
-//			}
-//		}
-//		
-//		Parameters newParams = creator.createParameters();
-//		RunEnvironment.getInstance().setParameters(newParams);
-//		
-//		RSApplication.getRSApplicationInstance().updateGuiParamsManager(newParams, null);
-//		RSApplication.getRSApplicationInstance().saveCurrentParameters();
-		
-//		DataSetDescriptor desc = new DataSetDescriptor("Insect Types Count", DataSetDescriptor.DataSetType.AGGREGATE);
-//		for(InsectParams ip: insectParams) {
-//			desc.addAggregateDataSource(ip.getInsectId(), "InsectTypeDataSource");
-//		}
-//		
-//		DataSetComponentControllerAction act = new DataSetComponentControllerAction(desc);
-//		RSApplication.getRSApplicationInstance().getCurrentScenario().addMasterControllerAction(act);
-		
-		
+				
 		currentContext = context;
 		return context;
 	}
@@ -291,10 +237,6 @@ public class PlantInsectBuilder implements ContextBuilder<Object> {
 		ArrayList<GridPoint> result = new ArrayList<GridPoint>();
 		
 		final int VISUAL_ROW_COUNT = 8;
-		
-//		int visualRowCount = gridSize / 6;
-//		visualRowCount = Math.max(4, visualRowCount);
-//		visualRowCount = Math.min(12, visualRowCount);
 		
 		int rowDistance = Math.max(4, gridSize / VISUAL_ROW_COUNT);
 		//int plantsPerVisualRow = Math.max(1, plantCount / VISUAL_ROW_COUNT);

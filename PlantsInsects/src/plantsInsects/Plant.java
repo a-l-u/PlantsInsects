@@ -29,11 +29,6 @@ public class Plant {
 		speciesParams = params;
 	}
 	
-//	public void dealDamage(int damage)
-//	{
-//		damageTaken = Math.max(speciesParams.getDamageThreshold(), damageTaken + damage);
-//	}
-	
 	@ScheduledMethod(start = 1, interval = 1, priority = 1)
 	public void hatchEggs()
 	{
@@ -89,20 +84,6 @@ public class Plant {
 			if(eggsBornWith == 0) {
 				continue;
 			}
-//			if(egg.getSpeciesParams().getPreferredPlantIds().contains(speciesParams.getPlantId())) {
-//				//eggsBornWith = RandomHelper.nextIntFromTo(max / 2, max);	
-//				eggsBornWith = max;
-//			}
-//			// if random number greater than tradeOff set eggs to max / 2
-//			else if(RandomHelper.nextDoubleFromTo(0, 1) > egg.getSpeciesParams().getTradeOff()){
-//				//eggsBornWith = RandomHelper.nextIntFromTo(1, max / 2);
-//				eggsBornWith = max / 2;
-//				System.out.println("spec born on crop");
-//			}
-//			// else this egg does not hatch
-//			else {
-//				continue;
-//			}
 			
 			if(egg.getSpeciesParams().getInsectId().equals("gen")) {
 				genCount++;

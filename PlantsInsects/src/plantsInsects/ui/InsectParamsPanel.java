@@ -20,6 +20,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.table.DefaultTableModel;
 
 import plantsInsects.InsectParams;
+import plantsInsects.ParameterSerializationHelper;
 import plantsInsects.PlantParams;
 import plantsInsects.enums.InsectInitialDistribution;
 import plantsInsects.enums.InsectSensoryMode;
@@ -420,12 +421,6 @@ public class InsectParamsPanel extends JPanel implements ActionListener {
 		
 		Object[][] tableData = new Object[plantParams.size()][2];
 		int index = 0;
-//		for (String key : params.getEggsPerPlant().keySet())
-//		{
-//		    tableData[index][0] = key;
-//		    tableData[index][1] = params.getEggsPerPlant().get(key);
-//		    index++;
-//		}
 		
 		for(PlantParams pp: plantParams) {			
 			tableData[index][0] = pp.getPlantId();

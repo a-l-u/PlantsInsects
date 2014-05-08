@@ -13,10 +13,10 @@ import org.junit.Test;
 
 import plantsInsects.Insect;
 import plantsInsects.InsectParams;
+import plantsInsects.ParameterSerializationHelper;
 import plantsInsects.Plant;
 import plantsInsects.PlantInsectBuilder;
 import plantsInsects.PlantParams;
-import plantsInsects.ui.ParameterSerializationHelper;
 import repast.simphony.context.Context;
 import repast.simphony.context.DefaultContext;
 import repast.simphony.engine.environment.RunEnvironment;
